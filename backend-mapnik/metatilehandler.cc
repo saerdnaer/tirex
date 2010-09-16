@@ -32,7 +32,7 @@
 #define MERCATOR_WIDTH 40075016.685578488
 #define MERCATOR_OFFSET 20037508.342789244
 
-MetatileHandler::MetatileHandler(const std::string& tiledir, const std::string& stylefile)
+MetatileHandler::MetatileHandler(const std::string& tiledir, const std::string& stylefile, const bool levels)
 {
     mTileDir = tiledir;
     mTileWidth = 256;
@@ -40,6 +40,7 @@ MetatileHandler::MetatileHandler(const std::string& tiledir, const std::string& 
     mMetaTileRows = 8;
     mMetaTileColumns = 8;
     load_map(mMap, stylefile);
+    mLevels = levels;
 
     fourpow[0] = 1;
     twopow[0] = 1;
@@ -103,7 +104,11 @@ const NetworkResponse *MetatileHandler::handleRequest(const NetworkRequest *requ
     std::string map = request->getParam("map", "default");
     rr.level = request->getParam("level", 0);
 
-    updateStatus("rendering z=%d x=%d y=%d map=%s", z, x, y, map.c_str());
+    if (mLevels) 
+        updateStatus("rendering z=%d x=%d y=%d map=%s level=%d", z, x, y, map.c_str(), rr.level);
+    else
+        updateStatus("rendering z=%d x=%d y=%d map=%s", z, x, y, map.c_str());
+
     const RenderResponse *rrs = render(&rr);
     updateStatus("idle");
 
@@ -134,7 +139,7 @@ const NetworkResponse *MetatileHandler::handleRequest(const NetworkRequest *requ
         int index = 0;
 
         char metafilename[PATH_MAX];
-        xyz_to_meta(metafilename, PATH_MAX, mTileDir.c_str(), x, y, z);
+        xyz_to_meta(metafilename, PATH_MAX, mTileDir.c_str(), x, y, z, rr.level);
         if (!mkdirp(mTileDir.c_str(), x, y, z))
         {
             return NetworkResponse::makeErrorResponse(request, "renderer internal error");
@@ -200,7 +205,7 @@ const NetworkResponse *MetatileHandler::handleRequest(const NetworkRequest *requ
     return resp;
 }
 
-void MetatileHandler::xyz_to_meta(char *path, size_t len, const char *tile_dir, int x, int y, int z) const
+void MetatileHandler::xyz_to_meta(char *path, size_t len, const char *tile_dir, int x, int y, int z, double level = 0.0) const
 {
     unsigned char i, hash[5];
 
@@ -209,7 +214,10 @@ void MetatileHandler::xyz_to_meta(char *path, size_t len, const char *tile_dir, 
         x >>= 4;
         y >>= 4;
     }
-    snprintf(path, len, "%s/%d/%u/%u/%u/%u/%u.meta", tile_dir, z, hash[4], hash[3], hash[2], hash[1], hash[0]);
+    if (mLevels) 
+        snprintf(path, len, "%s/%d/%u/%u/%u/%u/%u.%d.meta", tile_dir, z, hash[4], hash[3], hash[2], hash[1], hash[0], level);
+    else
+        snprintf(path, len, "%s/%d/%u/%u/%u/%u/%u.meta", tile_dir, z, hash[4], hash[3], hash[2], hash[1], hash[0]);
     return;
 }
 

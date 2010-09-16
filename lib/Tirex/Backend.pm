@@ -188,6 +188,7 @@ sub main
 
         my $map = Tirex::Map->get($msg->{'map'});
 
+        # maybe TODO: add level
         $self->set_status(sprintf("request map=%s z=%d x=%d y=%d", $map->get_name(), $msg->{'z'}, $msg->{'x'}, $msg->{'y'}));
 
         if ($map)

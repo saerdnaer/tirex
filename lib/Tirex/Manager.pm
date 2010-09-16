@@ -286,9 +286,10 @@ sub done
         $job->set_success($success);
         if ($success)
         {
-            ::syslog('debug', 'job rendering done id=%s map=%s x=%d y=%d z=%d', $job->get_id(), $job->get_map(), $job->get_x(), $job->get_y(), $job->get_z()) if ($Tirex::DEBUG);
+            ::syslog('debug', 'job rendering done id=%s %s', $job->get_id(), $job->get_metatile()->to_s()) if ($Tirex::DEBUG);
 
             # update statistics
+            # maybe TODO: add level
             $self->{'stats'}->{'count_rendered' }->{$job->get_map()}->[$job->get_z()] ||= 0;
             $self->{'stats'}->{'count_rendered' }->{$job->get_map()}->[$job->get_z()]++;
             $self->{'stats'}->{'sum_render_time'}->{$job->get_map()}->[$job->get_z()] ||= 0;
@@ -298,7 +299,7 @@ sub done
         }
         else
         {
-            ::syslog('warning', 'job rendering error id=%s map=%s x=%d y=%d z=%d result=%s errmsg=%s', $job->get_id(), $job->get_map(), $job->get_x(), $job->get_y(), $job->get_z(), $msg->{'result'}, $msg->{'errmsg'});
+            ::syslog('warning', 'job rendering error id=%s %s result=%s errmsg=%s', $job->get_id(), $job->get_metatile()->to_s(), $msg->{'result'}, $msg->{'errmsg'});
 
             # update statistics
             $self->{'stats'}->{'count_error' }++;

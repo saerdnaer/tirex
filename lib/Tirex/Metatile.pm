@@ -36,7 +36,6 @@ Create new metatile object.
 A metatile always needs the following parameters:
 
  map    the map config to use for rendering
- level  map styling parameter 
  x      metatile x coordinate
  y      metatile y coordinate
  z      zoom level
@@ -84,6 +83,8 @@ sub new_from_filename_and_map
     my $class    = shift;
     my $filename = shift;
     my $map      = shift;
+    # level undefined: map has no levels
+    undef my level;
 
     # remove leading / or ./
     $filename =~ s{^\.?/}{};
@@ -91,9 +92,15 @@ sub new_from_filename_and_map
     # remove trailing .meta
     $filename =~ s{\.meta$}{};
 
+    # extract level if exists
+    if ( $filename =~ m/^(.+)\.(-?\d+(\.\d+)?)$/ )
+    {
+        $filename = $1;
+        my $level = $2;
+    }
+
     my @path_components = split('/', $filename);
     my $z     = shift @path_components;
-    my $level = 0;
 
     my $x = 0;
     my $y = 0;
@@ -130,7 +137,6 @@ sub new_from_lon_lat
     my $lat   = $args{'lat'};
 
     Carp::croak('need map for new metatile') unless (defined $map);
-    # maybe TODO
     Carp::croak('need z for new metatile')   unless (defined $z  );
     Carp::croak('need lon for new metatile') unless (defined $lon);
     Carp::croak('need lat for new metatile') unless (defined $lat);
@@ -294,7 +300,14 @@ sub get_filename
 
     unshift(@path_components, $self->{'z'});
 
-    return join('/', @path_components) . '.meta';
+    if ( defined $self->{'level'} ) 
+    {
+        return join('/', @path_components) . '.' . $self->{'level'} . '.meta';
+    }
+    else
+    {
+        return join('/', @path_components) . '.meta';
+    }
 }
 
 

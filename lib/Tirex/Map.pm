@@ -189,6 +189,15 @@ Get maximum zoom of this map.
 
 sub get_maxz { return shift->{'maxz'}; }
 
+=head2 $map->get_()
+
+Get value of levels of this map.
+
+=cut
+
+sub get_levels { return shift->{'levels'}; }
+
+
 =head2 $map->to_s();
 
 Return human readable description of this map.

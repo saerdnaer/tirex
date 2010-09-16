@@ -50,6 +50,7 @@ bool RenderDaemon::loadMapnikWrapper(const char *configfile)
     std::string tiledir;
     std::string mapfile;
     std::string stylename;
+    bool levels = false;
     
     while (char *line = fgets(linebuf, sizeof(linebuf), f))
     {
@@ -78,6 +79,10 @@ bool RenderDaemon::loadMapnikWrapper(const char *configfile)
             else if (!strcmp(line, "name"))
             {
                 stylename.assign(eq);
+            }
+            else if (!strcmp(line, "levels"))
+            {
+                levels = (eq != "0");
             }
         }
     }
@@ -115,7 +120,7 @@ bool RenderDaemon::loadMapnikWrapper(const char *configfile)
 
     try
     {
-        mHandlerMap[stylename] = new MetatileHandler(tiledir, mapfile);
+        mHandlerMap[stylename] = new MetatileHandler(tiledir, mapfile, levels);
         mHandlerMap[stylename]->setStatusReceiver(this);
         debug("added style '%s' from map %s", stylename.c_str(), configfile);
         rv = true;
