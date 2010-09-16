@@ -35,10 +35,11 @@ Create new metatile object.
 
 A metatile always needs the following parameters:
 
- map  the map config to use for rendering
- x    metatile x coordinate
- y    metatile y coordinate
- z    zoom level
+ map    the map config to use for rendering
+ level  map styling parameter 
+ x      metatile x coordinate
+ y      metatile y coordinate
+ z      zoom level
 
 You can give any x and y coordinate in the range 0 .. 2^z-1. It will be
 rounded down to the next tile coordinate.
@@ -91,7 +92,8 @@ sub new_from_filename_and_map
     $filename =~ s{\.meta$}{};
 
     my @path_components = split('/', $filename);
-    my $z   = shift @path_components;
+    my $z     = shift @path_components;
+    my $level = 0;
 
     my $x = 0;
     my $y = 0;
@@ -107,10 +109,10 @@ sub new_from_filename_and_map
         $y |= ($c & 0x0f);
     }
 
-    return $class->new( map => $map, z => $z, x => $x, y => $y );
+    return $class->new( map => $map, level => $level, z => $z, x => $x, y => $y );
 }
 
-=head2 Tirex::Metatile->new_from_lon_lat(map => $map, lon => $lon, lat => $lat, z => $z)
+=head2 Tirex::Metatile->new_from_lon_lat(map => $map, level => $level, lon => $lon, lat => $lat, z => $z)
 
 Create metatile from zoom, longitude, and latitude.
 
@@ -121,12 +123,14 @@ sub new_from_lon_lat
     my $class = shift;
     my %args  = @_;
 
-    my $map = $args{'map'};
-    my $z   = $args{'z'};
-    my $lon = $args{'lon'};
-    my $lat = $args{'lat'};
+    my $map   = $args{'map'};
+    my $level = $args{'level'};
+    my $z     = $args{'z'};
+    my $lon   = $args{'lon'};
+    my $lat   = $args{'lat'};
 
     Carp::croak('need map for new metatile') unless (defined $map);
+    # maybe TODO
     Carp::croak('need z for new metatile')   unless (defined $z  );
     Carp::croak('need lon for new metatile') unless (defined $lon);
     Carp::croak('need lat for new metatile') unless (defined $lat);
@@ -138,7 +142,7 @@ sub new_from_lon_lat
     my $x = lon2x(1, $z, $lon);
     my $y = lat2y(1, $z, $lat);
 
-    return $class->new( map => $map, z => $z, x => $x, y => $y );
+    return $class->new( map => $map, level => $level, z => $z, x => $x, y => $y );
 }
 
 # Tirex::Metatile::lon2x
@@ -193,15 +197,16 @@ Get map.
 
 =cut
 
-sub get_x   { my $self = shift; return $self->{'x'};   }
-sub get_y   { my $self = shift; return $self->{'y'};   }
-sub get_z   { my $self = shift; return $self->{'z'};   }
-sub get_map { my $self = shift; return $self->{'map'}; }
+sub get_x     { my $self = shift; return $self->{'x'};     }
+sub get_y     { my $self = shift; return $self->{'y'};     }
+sub get_z     { my $self = shift; return $self->{'z'};     }
+sub get_map   { my $self = shift; return $self->{'map'};   }
+sub get_level { my $self = shift; return $self->{'level'}; }
 
 =head2 $mt->to_s()
 
 Return string describing this metatile in the format
-'map=MAP z=Z x=X y=Y'
+'map=MAP level=1 z=Z x=X y=Y'
 
 =cut
 
@@ -209,7 +214,7 @@ sub to_s
 {
     my $self = shift;
 
-    return join(' ', map { "$_=$self->{$_}"; } qw( map z x y ));
+    return join(' ', map { "$_=$self->{$_}"; } qw( map level z x y ));
 }
 
 =head2 $mt->equals($other_metatile)
@@ -225,10 +230,11 @@ sub equals
     my $self  = shift;
     my $other = shift;
 
-    return (($self->{'map'} eq $other->{'map'}) &&
-            ($self->{'x'}   == $other->{'x'}  ) &&
-            ($self->{'y'}   == $other->{'y'}  ) &&
-            ($self->{'z'}   == $other->{'z'}  ));
+    return (($self->{'map'}    eq $other->{'map'}  ) &&
+            ($self->{'level'}  == $other->{'level'}) &&
+            ($self->{'x'}      == $other->{'x'}    ) &&
+            ($self->{'y'}      == $other->{'y'}    ) &&
+            ($self->{'z'}      == $other->{'z'}    ));
 }
 
 =head2 $mt->up()
@@ -249,7 +255,7 @@ sub up
     $x -= $x % Tirex::Config::get('metatile_columns', $Tirex::METATILE_COLUMNS);
     $y -= $y % Tirex::Config::get('metatile_rows',    $Tirex::METATILE_ROWS   );
 
-    return Tirex::Metatile->new( map => $self->{'map'}, z => $self->{'z'} - 1, x => $x, y => $y );
+    return Tirex::Metatile->new( map => $self->{'map'}, level => $self->{'level'}, z => $self->{'z'} - 1, x => $x, y => $y );
 }
 
 =head2 $mt->get_filename()
@@ -257,8 +263,11 @@ sub up
 Return filename for this metatile.
 
 Format is something like:
+  [zoom]/[path].[level].meta
+or
   [zoom]/[path].meta
 
+  level         level as optional styling paramter, depends from map
   zoom          zoom level
   path          path with 4 directory elements and a filename
                 based on x and y coordinates

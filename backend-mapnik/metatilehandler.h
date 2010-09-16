@@ -45,10 +45,10 @@ class MetatileHandler : public RequestHandler
 {
     public:
 
-    MetatileHandler(const std::string& tiledir, const std::string& stylefile);
+    MetatileHandler(const std::string& tiledir, const std::string& stylefile, const bool levels);
     ~MetatileHandler();
     const NetworkResponse *handleRequest(const NetworkRequest *request);
-    void xyz_to_meta(char *path, size_t len, const char *tile_dir, int x, int y, int z) const;
+    void xyz_to_meta(char *path, size_t len, const char *tile_dir, int x, int y, int z, double level = 0.0) const;
     bool mkdirp(const char *tile_dir, int x, int y, int z) const;
     const std::string getRequestType() const { return "metatile_request"; }
 
@@ -63,6 +63,7 @@ class MetatileHandler : public RequestHandler
     unsigned int mMetaTileRows;
     unsigned int mMetaTileColumns;
     std::string mTileDir;
+    bool mLevels;
     mapnik::Map mMap;
 };
 

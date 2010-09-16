@@ -196,10 +196,11 @@ sub to_metatile
     my $self = shift;
 
     return Tirex::Metatile->new(
-        map => $self->{'map'},
-        x   => $self->{'x'},
-        y   => $self->{'y'},
-        z   => $self->{'z'}
+        map   => $self->{'map'},
+        level => $self->{'level'},
+        x     => $self->{'x'},
+        y     => $self->{'y'},
+        z     => $self->{'z'}
     );
 }
 

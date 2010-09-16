@@ -101,6 +101,7 @@ sub new
 
     $self->{'minz'} =  0 unless (defined $self->{'minz'});
     $self->{'maxz'} = 17 unless (defined $self->{'maxz'});
+    $self->{'levels'} = 0 unless (defined $self->{'levels'});
 
     $Maps{$self->{'name'}} = $self;
 

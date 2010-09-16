@@ -101,6 +101,7 @@ const NetworkResponse *MetatileHandler::handleRequest(const NetworkRequest *requ
     rr.height = mTileHeight * mtr;
 
     std::string map = request->getParam("map", "default");
+    rr.level = request->getParam("level", 0);
 
     updateStatus("rendering z=%d x=%d y=%d map=%s", z, x, y, map.c_str());
     const RenderResponse *rrs = render(&rr);
@@ -184,6 +185,7 @@ const NetworkResponse *MetatileHandler::handleRequest(const NetworkRequest *requ
 
         resp = new NetworkResponse(request);
         resp->setParam("map", map);
+        resp->setParam("level", level);
         resp->setParam("result", "ok");
         resp->setParam("x", x);
         resp->setParam("y", y);
@@ -285,6 +287,7 @@ const RenderResponse *MetatileHandler::render(const RenderRequest *rr)
 #endif
     mMap.resize(rr->width, rr->height);
     mMap.zoomToBox(bbox);
+    mMap.set_level(rr->level);
     mMap.set_buffer_size(128);
 
     debug("width: %d, height:%d", rr->width, rr->height);

@@ -199,7 +199,7 @@ sub run
     if ($job->expired())
     {
         $self->{'queue'}->next(); # ignore result, we already got the job from call to peek() above
-        ::syslog('debug', 'job is expired id=%s prio=%s map=%s x=%d y=%d z=%d', $job->get_id(), $job->get_prio(), $job->get_map(), $job->get_x(), $job->get_y(), $job->get_z()) if ($Tirex::DEBUG);
+        ::syslog('debug', 'job is expired id=%s prio=%s %s', $job->get_id(), $job->get_prio(), $job->get_metatile()->to_s()) if ($Tirex::DEBUG);
         $self->{'stats'}->{'count_expired'}++;
         return 2;
     }
@@ -228,7 +228,7 @@ sub run
     # remove job from queue, ignore result, we already got the job from call to peek() above
     $self->{'queue'}->next();
 
-    ::syslog('debug', 'request rendering of job id=%s prio=%s map=%s x=%d y=%d z=%d', $job->get_id(), $job->get_prio(), $job->get_map(), $job->get_x(), $job->get_y(), $job->get_z()) if ($Tirex::DEBUG);
+    ::syslog('debug', 'request rendering of job id=%s prio=%s %s', $job->get_id(), $job->get_prio(), $job->get_metatile()->to_s()) if ($Tirex::DEBUG);
 
     # do all the necessary housekeeping...
     $self->{'rendering_jobs'}->add($job);
@@ -259,7 +259,7 @@ sub send
     my $port = $map->get_renderer()->get_port();
     my $sock = Socket::pack_sockaddr_in($port, Socket::inet_aton('localhost'));
 
-    ::syslog('debug', 'sending request to port %d id=%s prio=%s map=%s x=%d y=%d z=%d', $port, $job->get_id(), $job->get_prio(), $job->get_map(), $job->get_x(), $job->get_y(), $job->get_z()) if ($Tirex::DEBUG);
+    ::syslog('debug', 'sending request to port %d id=%s prio=%s %s', $port, $job->get_id(), $job->get_prio(), $job->get_metatile()->to_s()) if ($Tirex::DEBUG);
 
     return $self->{'socket'}->send( $job->to_s( type => 'metatile_render_request' ), undef, $sock );
 }

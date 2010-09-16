@@ -169,12 +169,13 @@ sub status
     # 0 + in the following to force numbers for JSON
     my @status = map {
         {
-            map  =>     $_->get_map(),
-            x    => 0 + $_->get_x(),
-            y    => 0 + $_->get_y(),
-            z    => 0 + $_->get_z(),
-            prio => 0 + $_->get_prio(),
-            age  => time() - $_->{'rendering_requested'},
+            map   =>     $_->get_map(),
+            level => 0 + $_->get_level(),
+            x     => 0 + $_->get_x(),
+            y     => 0 + $_->get_y(),
+            z     => 0 + $_->get_z(),
+            prio  => 0 + $_->get_prio(),
+            age   => time() - $_->{'rendering_requested'},
         };
     } sort {
         $a->get_prio() == $b->get_prio()

@@ -128,7 +128,7 @@ sub to_s
 
 =head2 $job->to_msg( foo => 'bar' )
 
-Creates a message from the job. It contains the fields id, map, x, y, z, prio from the job
+Creates a message from the job. It contains the fields id, map, level, x, y, z, prio from the job
 and, if available, the field priority.
 
 All the fields given as argument to this method will also be added. You must give a type
@@ -143,6 +143,7 @@ sub to_msg
 
     $args{'id'}     = $self->get_id() unless (defined $args{'id'});
     $args{'map'}    = $self->get_map();
+    $args{'level'}  = $self->get_level();
     $args{'x'}      = $self->get_x();
     $args{'y'}      = $self->get_y();
     $args{'z'}      = $self->get_z();
@@ -205,10 +206,12 @@ sub get_metatile
     return $self->{'metatile'};
 }
 
-sub get_x   { my $self = shift; return $self->{'metatile'}->get_x();   }
-sub get_y   { my $self = shift; return $self->{'metatile'}->get_y();   }
-sub get_z   { my $self = shift; return $self->{'metatile'}->get_z();   }
-sub get_map { my $self = shift; return $self->{'metatile'}->get_map(); }
+sub get_x     { my $self = shift; return $self->{'metatile'}->get_x();     }
+sub get_y     { my $self = shift; return $self->{'metatile'}->get_y();     }
+sub get_z     { my $self = shift; return $self->{'metatile'}->get_z();     }
+sub get_map   { my $self = shift; return $self->{'metatile'}->get_map();   }
+sub get_level { my $self = shift; return $self->{'metatile'}->get_level(); }
+
 
 =head2 $job->get_pos()
 
