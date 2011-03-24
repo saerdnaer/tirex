@@ -82,7 +82,7 @@ bool RenderDaemon::loadMapnikWrapper(const char *configfile)
             }
             else if (!strcmp(line, "levels"))
             {
-                levels = (eq != "0");
+                levels = !(!strcmp(eq, "0") || !strcasecmp(eq, "no"));
             }
         }
     }

@@ -66,6 +66,8 @@ sub new
     $self->{'x'} -= $self->{'x'} % Tirex::Config::get('metatile_columns', $Tirex::METATILE_COLUMNS);
     $self->{'y'} -= $self->{'y'} % Tirex::Config::get('metatile_rows',    $Tirex::METATILE_ROWS   );
 
+    $self->{'level'} = '' unless (defined $self->{'level'});
+
     return $self;
 }
 
@@ -84,7 +86,7 @@ sub new_from_filename_and_map
     my $filename = shift;
     my $map      = shift;
     # level undefined: map has no levels
-    undef my level;
+    my $level    = '';
 
     # remove leading / or ./
     $filename =~ s{^\.?/}{};
@@ -93,10 +95,10 @@ sub new_from_filename_and_map
     $filename =~ s{\.meta$}{};
 
     # extract level if exists
-    if ( $filename =~ m/^(.+)\.(-?\d+(\.\d+)?)$/ )
+    if ( $filename =~ m/^(.+?)\.(-?\d+(\.\d+)?)$/ )
     {
         $filename = $1;
-        my $level = $2;
+	$level = $2;
     }
 
     my @path_components = split('/', $filename);
@@ -237,7 +239,7 @@ sub equals
     my $other = shift;
 
     return (($self->{'map'}    eq $other->{'map'}  ) &&
-            ($self->{'level'}  == $other->{'level'}) &&
+            ($self->{'level'}  eq $other->{'level'}) &&
             ($self->{'x'}      == $other->{'x'}    ) &&
             ($self->{'y'}      == $other->{'y'}    ) &&
             ($self->{'z'}      == $other->{'z'}    ));
@@ -300,7 +302,7 @@ sub get_filename
 
     unshift(@path_components, $self->{'z'});
 
-    if ( defined $self->{'level'} ) 
+    if ( $self->{'level'} ne '' ) 
     {
         return join('/', @path_components) . '.' . $self->{'level'} . '.meta';
     }

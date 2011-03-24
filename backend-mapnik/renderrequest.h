@@ -28,6 +28,7 @@ class RenderRequest
         double south;
         unsigned int srs;
         unsigned int bbox_srs;
+	double level;
 };
 
 #endif

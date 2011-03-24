@@ -70,11 +70,11 @@ sub readable
     return &Tirex::Source::STATUS_CONTINUE if (length($self->{read_buffer}) < 64);
 
     # request fully read.
-    ($self->{ver}, $self->{cmd}, $self->{x}, $self->{y}, $self->{z}, $self->{map}) = 
+    ($self->{ver}, $self->{cmd}, $self->{x}, $self->{y}, $self->{z}, $self->{map}, $self->{level}) = 
         unpack("lllllZ*", $self->{read_buffer});
     $self->{read_buffer} = "";
 
-    ::syslog('debug', 'read request from mod_tile: ver=%d cmd=%d x=%d y=%d z=%d map=%s', $self->{ver}, $self->{cmd}, $self->{x}, $self->{y}, $self->{z}, $self->{map}) if ($Tirex::DEBUG);
+    ::syslog('debug', 'read request from mod_tile: ver=%d cmd=%d x=%d y=%d z=%d map=%s level=%d', $self->{ver}, $self->{cmd}, $self->{x}, $self->{y}, $self->{z}, $self->{map}, $self->{level}) if ($Tirex::DEBUG);
 
     return &Tirex::Source::STATUS_MESSAGE_COMPLETE;
 }
@@ -101,6 +101,7 @@ sub make_job
     my $metatile = eval {
         my $mt = Tirex::Metatile->new(
             map => $self->{'map'}, 
+            level => $self->{'level'},
             x   => $self->{'x'}, 
             y   => $self->{'y'}, 
             z   => $self->{'z'}

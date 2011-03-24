@@ -1,3 +1,9 @@
+tirex (0.2.0.level1) lucid; urgency=low
+
+  * implemented optional level attribute 
+
+ -- Andreas Hubel <andi@saerdnaer.de>  Thu, 16 Sep 2010 23:35:25 +0200
+
 tirex (0.2.0) jaunty; urgency=low
 
   * new renderd architecture allows several different renderers at the same time

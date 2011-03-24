@@ -190,7 +190,7 @@ const NetworkResponse *MetatileHandler::handleRequest(const NetworkRequest *requ
 
         resp = new NetworkResponse(request);
         resp->setParam("map", map);
-        resp->setParam("level", level);
+        resp->setParam("level", rr.level);
         resp->setParam("result", "ok");
         resp->setParam("x", x);
         resp->setParam("y", y);
@@ -205,7 +205,7 @@ const NetworkResponse *MetatileHandler::handleRequest(const NetworkRequest *requ
     return resp;
 }
 
-void MetatileHandler::xyz_to_meta(char *path, size_t len, const char *tile_dir, int x, int y, int z, double level = 0.0) const
+void MetatileHandler::xyz_to_meta(char *path, size_t len, const char *tile_dir, int x, int y, int z, double level) const
 {
     unsigned char i, hash[5];
 
@@ -215,7 +215,7 @@ void MetatileHandler::xyz_to_meta(char *path, size_t len, const char *tile_dir, 
         y >>= 4;
     }
     if (mLevels) 
-        snprintf(path, len, "%s/%d/%u/%u/%u/%u/%u.%d.meta", tile_dir, z, hash[4], hash[3], hash[2], hash[1], hash[0], level);
+        snprintf(path, len, "%s/%d/%u/%u/%u/%u/%u.%.0f.meta", tile_dir, z, hash[4], hash[3], hash[2], hash[1], hash[0], level);
     else
         snprintf(path, len, "%s/%d/%u/%u/%u/%u/%u.meta", tile_dir, z, hash[4], hash[3], hash[2], hash[1], hash[0]);
     return;
@@ -295,7 +295,8 @@ const RenderResponse *MetatileHandler::render(const RenderRequest *rr)
 #endif
     mMap.resize(rr->width, rr->height);
     mMap.zoomToBox(bbox);
-    mMap.set_level(rr->level);
+    double level = rr->level;
+    mMap.set_level(level);
     mMap.set_buffer_size(128);
 
     debug("width: %d, height:%d", rr->width, rr->height);
