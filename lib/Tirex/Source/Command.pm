@@ -72,10 +72,11 @@ sub make_job
 
     my $metatile = eval {
         my $mt = Tirex::Metatile->new(
-            map => $self->{'map'}, 
-            x   => $self->{'x'}, 
-            y   => $self->{'y'}, 
-            z   => $self->{'z'}
+            map   => $self->{'map'}, 
+            level => $self->{'level'},
+            x     => $self->{'x'}, 
+            y     => $self->{'y'}, 
+            z     => $self->{'z'}
         );
         Tirex::Map->get_map_for_metatile($mt);
         return $mt;
@@ -92,6 +93,7 @@ sub make_job
             $self->reply({
                 type    => $self->{'type'},
                 map     => $self->{'map'}, 
+                level   => $self->{'level'}, 
                 x       => $self->{'x'}, 
                 y       => $self->{'y'}, 
                 z       => $self->{'z'},
@@ -116,6 +118,7 @@ sub make_job
             $self->reply({
                 type    => $self->{'type'},
                 map     => $self->{'map'}, 
+                level   => $self->{'level'}, 
                 x       => $self->{'x'}, 
                 y       => $self->{'y'}, 
                 z       => $self->{'z'},
